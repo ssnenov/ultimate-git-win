@@ -9,6 +9,43 @@ local promptValueFolder = "folder"
  -- default is promptValueFull
 local promptValue = promptValueFull
 
+---
+-- Find out current branch
+-- @return {nil|git branch name}
+---
+local function get_git_branch(git_dir)
+    git_dir = git_dir or get_git_dir()
+
+    -- If git directory not found then we're probably outside of repo
+    -- or something went wrong. The same is when head_file is nil
+    local head_file = git_dir and io.open(git_dir..'/HEAD')
+    if not head_file then return end
+
+    local HEAD = head_file:read()
+    head_file:close()
+
+    -- if HEAD matches branch expression, then we're on named branch
+    -- otherwise it is a detached commit
+    local branch_name = HEAD:match('ref: refs/heads/(.+)')
+
+    return branch_name or 'HEAD detached at '..HEAD:sub(1, 7)
+end
+
+---
+-- Find out current branch
+-- @return {false|mercurial branch name}
+---
+local function get_hg_branch()
+    for line in io.popen("hg branch 2>nul"):lines() do
+        local m = line:match("(.+)$")
+        if m then
+            return m
+        end
+    end
+
+    return false
+end
+
 local function get_folder_name(path)
 	local reversePath = string.reverse(path)
 	local slashIndex = string.find(reversePath, "\\")
