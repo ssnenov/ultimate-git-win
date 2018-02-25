@@ -1,9 +1,8 @@
 # Ultimate Git setup for Windows
 
 ## Introduction
-![Ultimate git setup for Windows](/images/preview.png)
-
 This is my ultimate git setup for windows. You will read how to configure Cmder for higher productivity and take the power of aliases on steroids.
+![Ultimate git setup for Windows](/images/Preview.png)
 
 ## Getting started
 1. [Cmder](#cmder)
@@ -29,7 +28,7 @@ Go to Settings and open `Startup > Tasks`.
 
 Git GUI:
 
-![Setting up git gui](/images/cmder-tasks.png)
+![Setting up git gui](/images/cmder-tasks.PNG)
 
 1. Create a new task
 1. Name it `gitgui`
