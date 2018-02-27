@@ -9,6 +9,9 @@ local promptValueFolder = "folder"
 -- default is promptValueFull
 local promptValue = promptValueFull
 
+local arrowSymbol = ""
+local branchSymbol = ""
+
 -- colors example https://gist.github.com/mlocati/fdabcaeb8071d5c75a2d51712db24011
 function createColoredSegment(background, foreground, text)
     local open = background .. "m" .. arrowSymbol
@@ -43,21 +46,6 @@ local function get_git_branch(git_dir)
     return branch_name or "HEAD detached at " .. HEAD:sub(1, 7)
 end
 
----
--- Find out current branch
--- @return {false|mercurial branch name}
----
-local function get_hg_branch()
-    for line in io.popen("hg branch 2>nul"):lines() do
-        local m = line:match("(.+)$")
-        if m then
-            return m
-        end
-    end
-
-    return false
-end
-
 local function get_folder_name(path)
     local reversePath = string.reverse(path)
     local slashIndex = string.find(reversePath, "\\")
@@ -83,9 +71,6 @@ function cwd_prompt_filter()
 
     return false
 end
-
-local arrowSymbol = ""
-local branchSymbol = ""
 
 --- copied from clink.lua
 -- Resolves closest directory location for specified directory.
@@ -149,39 +134,7 @@ end
 
 -- copied from clink.lua
 -- clink.lua is saved under %CMDER_ROOT%\vendor
-local function get_hg_dir(path)
-    return get_dir_contains(path, ".hg")
-end
-
 -- adopted from clink.lua
--- clink.lua is saved under %CMDER_ROOT%\vendor
-function colorful_hg_prompt_filter()
-    -- Colors for mercurial status
-    local colors = {
-        clean = "\x1b[1;37;40m",
-        dirty = "\x1b[31;1m"
-    }
-
-    if get_hg_dir() then
-        -- if we're inside of mercurial repo then try to detect current branch
-        local branch = get_hg_branch()
-        if branch then
-            -- Has branch => therefore it is a mercurial folder, now figure out status
-            if get_hg_status() then
-                color = colors.clean
-            else
-                color = colors.dirty
-            end
-
-            clink.prompt.value = clink.prompt.value .. color .. "(" .. branch .. ")"
-            return false
-        end
-    end
-
-    return false
-end
-
--- copied from clink.lua
 -- clink.lua is saved under %CMDER_ROOT%\vendor
 local function get_git_dir(path)
     -- return parent path for specified entry (either file or directory)
@@ -229,7 +182,10 @@ end
 -- @return {bool}
 ---
 function get_git_status()
-    local file = io.popen("git status --no-lock-index --porcelain 2>nul")
+    local file =
+        io.popen(
+        "git diff-files --no-ext-diff --name-only  --stat-count=1 || git diff-index --no-ext-diff --name-only --stat-count=1 --cached HEAD"
+    )
     for line in file:lines() do
         file:close()
         return false
@@ -253,6 +209,8 @@ function colorful_git_prompt_filter()
             else
                 color = 43
                 foregroundColor = 30
+
+                branch = branch .. " ±"
             end
 
             local segmentText = " " .. branchSymbol .. " " .. branch
@@ -272,7 +230,6 @@ end
 
 -- override the built-in filters
 clink.prompt.register_filter(cwd_prompt_filter, 55)
-clink.prompt.register_filter(colorful_hg_prompt_filter, 60)
 clink.prompt.register_filter(colorful_git_prompt_filter, 60)
 clink.prompt.register_filter(closing_prompt_filter, 69)
 clink.prompt.register_filter(lambda_prompt_filter, 70)
