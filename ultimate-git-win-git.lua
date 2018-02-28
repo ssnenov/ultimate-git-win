@@ -871,7 +871,7 @@ local git_parser = parser(
 local modifiedNonStagedFiles = function (token)
     local result = w()
 
-    local modifiedFilesStream = io.popen('git diff-files --name-only')
+    local modifiedFilesStream = io.popen('git diff-files --name-only && git ls-files --others --exclude-standard')
     for line in modifiedFilesStream:lines() do
         table.insert(result, line)
     end

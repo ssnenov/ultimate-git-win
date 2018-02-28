@@ -179,7 +179,7 @@ end
 function get_git_status()
     local file =
         io.popen(
-        "git diff-files --no-ext-diff --name-only  --stat-count=1 || git diff-index --no-ext-diff --name-only --stat-count=1 --cached HEAD"
+        "git diff-files --no-ext-diff --name-only --stat-count=1 && git diff-index --no-ext-diff --name-only --stat-count=1 --cached HEAD && git ls-files --others --exclude-standard"
     )
     for line in file:lines() do
         file:close()
