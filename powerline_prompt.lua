@@ -9,18 +9,13 @@ local promptValueFolder = "folder"
 -- default is promptValueFull
 local promptValue = promptValueFull
 
-local arrowSymbol = ""
 local branchSymbol = ""
 
--- colors example https://gist.github.com/mlocati/fdabcaeb8071d5c75a2d51712db24011
-function createColoredSegment(background, foreground, text)
-    local open = background .. "m" .. arrowSymbol
-    local textColorization = "\x1b[" .. foreground .. ";" .. background .. "m"
-    local close = " \x1b[" .. background - 10 .. ";"
-
-    -- {background}m>\x1b[37;{background}m{TEXT}\x1b[{background-10};
-    return open .. textColorization .. text .. close
+if not string.find(package.path, "\\config\\?.lua") and os.getenv("cmder_root") ~= nil then
+    package.path = package.path .. ";" .. os.getenv("cmder_root") .. "\\config\\?.lua"
 end
+
+require("ultimate-git-win")
 
 ---
 -- Find out current branch
