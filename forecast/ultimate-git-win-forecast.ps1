@@ -1,12 +1,17 @@
 param(
     [string]$city,
-    [string]$countryCode
+    [string]$countryCode,
+    [boolean]$useCelsius = $true
 )
 
-$URI = "https://query.yahooapis.com/v1/public/yql?q=select  * from weather.forecast where woeid in (select woeid from geo.places(1) where  text='{0}, {1}') and u='c' &format=json&env=store://datatables.org/alltableswithkeys" -f $city, $countryCode
+$tempScale = 'c'
+if (-not $useCelsius) {
+    $tempScale = 'f'
+}
+
+$URI = "https://query.yahooapis.com/v1/public/yql?q=select item.condition from weather.forecast where woeid in (select woeid from geo.places(1) where text='{0}, {1}') and u='{2}' &format=json&env=store://datatables.org/alltableswithkeys" -f $city, $countryCode, $tempScale
 
 $Data = Invoke-RestMethod -Uri  $URI -TimeoutSec 2 -ErrorAction Stop
 
-$Data.query.results.channel.item.forecast[0].low
-$Data.query.results.channel.item.forecast[0].high
-$Data.query.results.channel.item.forecast[0].text
+$Data.query.results.channel.item.condition[0].temp
+$Data.query.results.channel.item.condition[0].text
