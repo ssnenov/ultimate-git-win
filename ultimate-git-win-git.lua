@@ -883,7 +883,15 @@ end
 local customAliases = parser({
     "co"..parser({checkout_spec_generator}),
     "l"..parser({local_or_remote_branches}),
-    "d"..parser({local_or_remote_branches}),
+	"d"..parser({checkout_spec_generator}),
+	
+	"mr"..parser({local_or_remote_branches}),
+	"mrf"..parser({local_or_remote_branches}),
+	
+	"r"..parser({checkout_spec_generator}),
+	"r1"..parser({checkout_spec_generator}),
+	"r2"..parser({checkout_spec_generator}),
+	"r3"..parser({checkout_spec_generator})
 })
 
 clink.arg.register_parser("g", customAliases)
