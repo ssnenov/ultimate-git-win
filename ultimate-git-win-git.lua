@@ -884,6 +884,7 @@ local customAliases = parser({
     "co"..parser({checkout_spec_generator}),
     "l"..parser({local_or_remote_branches}),
 	"d"..parser({checkout_spec_generator}),
+	"br"..parser({local_or_remote_branches}),
 	
 	"mr"..parser({local_or_remote_branches}),
 	"mrf"..parser({local_or_remote_branches}),
